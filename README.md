@@ -2,6 +2,10 @@
 
 本仓库是 Anthropic knowledge-work-plugins 的中国化 fork。首批改造 [finance 中国财税插件](finance/README.md)，连接本机中国财税工具，使用 `knowledge-work-plugins-cn` marketplace；其他插件保留上游内容。来源与修改见 [finance/SOURCES.md](finance/SOURCES.md)。
 
+中国财税插件按 [finance 安装与连接](finance/README.md#安装与连接)接入，并先配置[本机后端、账库和调用记录目录](finance/CONNECTORS.md)。默认使用 direct MCP，自动记录调用；有来源汇总可按合同作独立条件试算，不能据此声称完整账务或正式申报已完成。
+
+以下英文介绍保留上游插件集合的背景；中国 finance 的实际能力、连接器和运行依赖以上述中文入口为准。
+
 Plugins that turn Claude into a specialist for your role, team, and company. Built for [Claude Cowork](https://claude.com/product/cowork), also compatible with [Claude Code](https://claude.com/product/claude-code).
 
 ## Why Plugins
@@ -22,7 +26,7 @@ We're open-sourcing 11 plugins built and inspired by our own work:
 | **[product-management](./product-management)** | Write specs, plan roadmaps, synthesize user research, keep stakeholders updated, and track the competitive landscape. | Slack, Linear, Asana, Monday, ClickUp, Jira, Notion, Figma, Amplitude, Pendo, Intercom, Fireflies |
 | **[marketing](./marketing)** | Draft content, plan campaigns, enforce brand voice, brief on competitors, and report on performance across channels. | Slack, Canva, Figma, HubSpot, Amplitude, Notion, Ahrefs, SimilarWeb, Klaviyo |
 | **[legal](./legal)** | Review contracts, triage NDAs, navigate compliance, assess risk, prep for meetings, and draft templated responses. | Slack, Box, Egnyte, Jira, Microsoft 365 |
-| **[finance](./finance)** | Prep journal entries, reconcile accounts, generate financial statements, analyze variances, manage close, and support audits. | Snowflake, Databricks, BigQuery, Slack, Microsoft 365 |
+| **[finance](./finance)** | 中国财税：凭证、对账、报表、差异、月结、审计支持及税务核对；范围见中文入口。 | 本机 taxes-agent direct MCP；其他类别按实际连接核实 |
 | **[data](./data)** | Query, visualize, and interpret datasets — write SQL, run statistical analysis, build dashboards, and validate your work before sharing. | Snowflake, Databricks, BigQuery, Definite, Hex, Amplitude, Jira |
 | **[enterprise-search](./enterprise-search)** | Find anything across email, chat, docs, and wikis — one query across all your company's tools. | Slack, Notion, Guru, Jira, Asana, Microsoft 365 |
 | **[bio-research](./bio-research)** | Connect to preclinical research tools and databases (literature search, genomics analysis, target prioritization) to accelerate early-stage life sciences R&D. | PubMed, BioRender, bioRxiv, ClinicalTrials.gov, ChEMBL, Synapse, Wiley, Owkin, Open Targets, Benchling |
@@ -31,6 +35,15 @@ We're open-sourcing 11 plugins built and inspired by our own work:
 Install these directly from Cowork, browse the full collection here on GitHub, or build your own.
 
 ## Getting Started
+
+### 本 fork 的中国财税插件
+
+```bash
+claude plugin marketplace add huxiaoyang-code/knowledge-work-plugins
+claude plugin install finance@knowledge-work-plugins-cn
+```
+
+安装后继续完成 [finance 连接配置](finance/CONNECTORS.md)，核对实际 MCP 工具和目标账库。Pi 使用后端宿主生成器的 `--plugin-root <finance绝对路径>`。下列 Cowork 与 Claude Code 示例保留为上游插件安装方式，不会安装本 fork 的中国 finance。
 
 ### Cowork
 
@@ -52,6 +65,8 @@ Once installed, plugins activate automatically. Skills fire when relevant, and s
 
 Every plugin follows the same structure:
 
+下图保留上游结构示意；本 fork 的 finance 使用 `skills/` 作为业务入口，具体目录见 [finance/README.md](finance/README.md)，不要求存在 `commands/`。
+
 ```
 plugin-name/
 ├── .claude-plugin/plugin.json   # Manifest
@@ -64,7 +79,7 @@ plugin-name/
 - **Commands** are explicit actions you trigger (e.g., `/finance:reconciliation`, `/product-management:write-spec`).
 - **Connectors** wire Claude to the external tools your role depends on — CRMs, project trackers, data warehouses, design tools, and more — via [MCP servers](https://modelcontextprotocol.io/).
 
-Every component is file-based — markdown and JSON, no code, no infrastructure, no build steps.
+上游插件配置主要由 Markdown 与 JSON 文件组成。本 fork 的 finance 另有结构与集成测试，并依赖已启动的本机财税后端；插件安装本身不等于后端、账库或业务能力已经接通。
 
 ## Making Them Yours
 

@@ -5,7 +5,7 @@
 | 类别 | 占位 | 本中国化版本的实际接入 |
 |---|---|---|
 | ERP/中国财税 | `~~erp` | 本机 taxes-agent 的 finance MCP，profile为`direct`；账套、凭证、查询、报表和已支持税费 |
-| 规则与税费 | `~~tax tools` | 同一finance MCP的`finance_rules`、`finance_tax_calculate`、`finance_record_contract` |
+| 规则与税费 | `~~tax tools` | 同一finance MCP的`finance_rules`、`finance_tax_calculate`、`finance_tax_summary_calculate`、`finance_record_contract` |
 | 业务底稿 | `~~workpapers` | 同一finance MCP的`finance_workpaper`、`finance_annual_workpaper` |
 | 文档/表格 | `~~documents` / `~~spreadsheets` | 本版本不预装解析或电子表格服务；按宿主实际工具及本次授权使用 |
 | 数据仓库/沟通 | `~~data warehouse` / `~~chat` / `~~email` | 本版本不预配；确有需要时由操作者另接，不以官方示例地址表示已经连接 |
@@ -21,6 +21,7 @@
 - `account_context`核实已有账套，`finance_query`或`ledger_query`取实际账簿。
 - `finance_record_contract`按需要取得某种业务记录合同；`finance_workpaper`直接计算原件支持的业务，不先做元数据编排。
 - `finance_rules`取实际中国规则、来源、期间和限制；`finance_tax_calculate`调用真实税费计算分支，缺件保留原生状态。
+- `finance_tax_summary_calculate`独立处理有来源税务汇总的条件试算；按需读`finance_record_contract(recordType=tax_summary)`，输入绑定精确JSON位置，试算不等于完整账、资格或实缴已核，见[汇总条件试算](../../tax-review/references/summary-calculation.md)。
 - `voucher_check`校验明确分录；凭证、资产、导入、期间等写入只通过实际业务工具及本次授权。
 
 工具自动记录调用过程。金额、凭证和规则优先显示，调用与原件通过本机引用深入查看；字段和回读工具以实际返回为准，不猜引用路径或内部ID。
