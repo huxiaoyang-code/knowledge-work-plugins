@@ -1,92 +1,37 @@
-# Finance & Accounting Plugin
+# 中国财税插件
 
-A finance and accounting plugin primarily designed for [Cowork](https://claude.com/product/cowork), Anthropic's agentic desktop application — though it also works in Claude Code. Supports month-end close, journal entry preparation, account reconciliation, financial statement generation, variance analysis, and SOX audit support.
+基于 Anthropic 官方 finance 插件中国化改编，沿用插件清单、业务 Skill、连接类别和工作底稿格式。Agent自主判断和选择业务工具；本机中国财税后端负责已支持的计算、账务操作和自动调用记录，不要求手工事实登记或运行时任务图。来源和许可见 [SOURCES.md](SOURCES.md) 与 [LICENSE](LICENSE)。
 
-> **Important**: This plugin assists with finance and accounting workflows but does not provide financial, tax, or audit advice. All outputs should be reviewed by qualified financial professionals before use in financial reporting, regulatory filings, or audit documentation.
+## 安装与连接
 
-## Installation
-
-```bash
-claude plugin marketplace add anthropics/knowledge-work-plugins
-claude plugin install finance@knowledge-work-plugins
+```sh
+claude plugin marketplace add huxiaoyang-code/knowledge-work-plugins
+claude plugin install finance@knowledge-work-plugins-cn
 ```
 
-## Commands
+先按 [连接说明](CONNECTORS.md)配置明确的本机后端、账库和记录目录。Pi使用同一finance MCP及本插件技能目录，由后端宿主生成器设置`--plugin-root <本finance目录绝对路径>`。配置文件存在不代表已连接；核对实际工具和目标。
 
-| Command | Description |
-|---------|-------------|
-| `/journal-entry` | Journal entry preparation — generate accruals, fixed asset entries, prepaids, payroll, and revenue entries with proper debits/credits and supporting detail |
-| `/reconciliation` | Account reconciliation — compare GL balances to subledger, bank, or third-party balances and identify reconciling items |
-| `/income-statement` | Income statement generation — produce P&L with period-over-period comparison and variance analysis |
-| `/variance-analysis` | Variance/flux analysis — decompose variances into drivers with narrative explanations and waterfall analysis |
-| `/sox-testing` | SOX compliance testing — generate sample selections, testing workpapers, and control assessments |
+## 业务入口
 
-## Skills
+| 入口 | 用途 |
+|---|---|
+| `/finance:journal-entry` | 凭证草稿、支持计算和科目核对 |
+| `/finance:reconciliation` | 总账、往来、银行、库存及资产差异 |
+| `/finance:financial-statements` | 中国适用准则报表及期间比较 |
+| `/finance:variance-analysis` | 金额差异、业务驱动及待调查项 |
+| `/finance:internal-control-review` | 中国企业内控资料取样与异常核对 |
+| `/finance:tax-review` | 增值税抵扣、季度小规模、所得税、工资个税、印花及其他税费依据 |
 
-| Skill | Description |
-|-------|-------------|
-| `journal-entry-prep` | JE preparation best practices, standard accrual types, supporting documentation requirements, and review workflows |
-| `reconciliation` | Reconciliation methodology for GL-to-subledger, bank recs, and intercompany, with reconciling item categorization and aging |
-| `financial-statements` | Income statement, balance sheet, and cash flow statement formats with GAAP presentation and flux analysis methodology |
-| `variance-analysis` | Variance decomposition techniques (price/volume, rate/mix), materiality thresholds, narrative generation, and waterfall charts |
-| `close-management` | Month-end close checklist, task sequencing, dependencies, status tracking, and common close activities by day |
-| `audit-support` | SOX 404 control testing methodology, sample selection, documentation standards, and deficiency classification |
+名称遵守实际Skill frontmatter；`journal-entry-prep`、`close-management`、`audit-support`按相关任务自动读取。原`sox-testing`已改为`internal-control-review`，不声称SOX为中国企业普遍义务。
 
-## Example Workflows
+## 核对方式
 
-### Month-End Close
+先明确企业、账套、期间、币种和业务，再选择需要的Skill与工具。月结日历与依赖是可调整业务参考，不强制编排。已有数据不足时列具体缺件；可支持部分照常核对，不能把独立模型计算冒充原生引擎已完成。
 
-1. Run `/journal-entry ap-accrual 2024-12` to generate AP accrual entries
-2. Run `/journal-entry prepaid 2024-12` to amortize prepaid expenses
-3. Run `/journal-entry fixed-assets 2024-12` to book depreciation
-4. Run `/reconciliation cash 2024-12` to reconcile bank accounts
-5. Run `/reconciliation accounts-receivable 2024-12` to reconcile AR subledger
-6. Run `/income-statement monthly 2024-12` to generate the P&L with flux analysis
+交付默认依次展示账本金额、凭证/计算结果、规则依据。调用链及输入原件始终自动保存，在深入排错时展开，见 [报告顺序](skills/shared/references/reporting.md)。本版本提供本机账税核对和申报依据；不进行税局登录、正式申报、缴款或开票。
 
-### Variance Analysis
+税率和公式统一由后端规则与计算工具维护。福建漳州是当前业务起点，具体地点、税务资格和地区参数须来自实际证据；地名不能替代市区分类或优惠资格。后端义务目录及限制见 [税费范围](skills/tax-review/references/supported-obligations.md)。
 
-1. Run `/variance-analysis revenue 2024-Q4 vs 2024-Q3` to analyze revenue variances
-2. Run `/variance-analysis opex 2024-12 vs budget` to investigate operating expense variances
-3. Review the waterfall analysis and provide context on unexplained variances
+## 无模型验证
 
-### SOX Testing
-
-1. Run `/sox-testing revenue-recognition 2024-Q4` to generate revenue control testing workpapers
-2. Run `/sox-testing procure-to-pay 2024-Q4` to test procurement controls
-3. Review sample selections and document test results
-
-## MCP Integration
-
-> If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](CONNECTORS.md).
-
-This plugin works best when connected to your financial data sources via MCP servers. Add the relevant servers to your `.mcp.json`:
-
-### ERP / Accounting System
-
-Connect your ERP (e.g., NetSuite, SAP) MCP server to pull trial balances, subledger data, and journal entries automatically.
-
-### Data Warehouse
-
-Connect your data warehouse (e.g., Snowflake, BigQuery) MCP server to query financial data, run variance analysis, and pull historical comparisons.
-
-### Spreadsheets
-
-Connect spreadsheet tools (e.g., Google Sheets, Excel) for workpaper generation, reconciliation templates, and financial model updates.
-
-### Analytics / BI
-
-Connect your BI platform (e.g., Tableau, Looker) to pull dashboards, KPIs, and trend data for variance explanations.
-
-> **Note:** Connect your ERP and data warehouse MCP servers to pull financial data automatically. Without these, you can paste data or upload files for analysis.
-
-## Configuration
-
-Add your data source MCP servers to the `mcpServers` section of `.mcp.json` in this plugin directory. The `recommendedCategories` field lists the types of integrations that enhance this plugin's capabilities:
-
-- `erp-accounting` — ERP or accounting system for GL, subledger, and JE data
-- `data-warehouse` — Data warehouse for financial queries and historical data
-- `spreadsheets` — Spreadsheet tools for workpaper generation
-- `analytics-bi` — BI tools for dashboards and KPI data
-- `documents` — Document storage for policies, memos, and support
-- `email` — Email for sending reports and requesting approvals
-- `chat` — Team communication for close status updates and questions
+`node --test finance/tests/structure.test.mjs`检查插件结构、来源、业务引用和报告顺序。设置`TAXES_AGENT_ROOT`为对应后端绝对路径后，同一命令还会核真实29项工具合同，并经实际MCP逐份读取技能与业务参考；未提供后端时相应集成项明确跳过，不称已验证连接。该验证不调用Pi或任何模型。

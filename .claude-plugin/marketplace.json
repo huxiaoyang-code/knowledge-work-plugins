@@ -1,7 +1,7 @@
 {
-  "name": "knowledge-work-plugins",
+  "name": "knowledge-work-plugins-cn",
   "owner": {
-    "name": "Anthropic"
+    "name": "huxiaoyang-code"
   },
   "plugins": [
     {
@@ -46,7 +46,7 @@
       "name": "finance",
       "displayName": "Finance",
       "source": "./finance",
-      "description": "Streamline finance and accounting workflows, from journal entries and reconciliation to financial statements and variance analysis. Speed up audit prep, month-end close, and keeping your books clean."
+      "description": "中国企业凭证、账目核对、报表、税费依据和内控复核，直接调用本机中国财税工具并自动保存调用记录。"
     },
     {
       "name": "data",

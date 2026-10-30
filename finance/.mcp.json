@@ -1,32 +1,17 @@
 {
   "mcpServers": {
-    "snowflake": {
-      "type": "http",
-      "url": ""
-    },
-    "databricks": {
-      "type": "http",
-      "url": ""
-    },
-    "bigquery": {
-      "type": "http",
-      "url": "https://bigquery.googleapis.com/mcp"
-    },
-    "slack": {
-      "type": "http",
-      "url": "https://mcp.slack.com/mcp",
-      "oauth": {
-        "clientId": "1601185624273.8899143856786",
-        "callbackPort": 3118
+    "finance": {
+      "command": "node",
+      "args": [
+        "${TAXES_AGENT_ROOT}/05-reconstruction/codex/mcp/finance-mcp/server.mjs"
+      ],
+      "env": {
+        "FINANCE_MCP_PROFILE": "direct",
+        "FINANCE_SKILLS_DIR": "${CLAUDE_PLUGIN_ROOT}/skills",
+        "FINANCE_DATABASE_PATH": "${FINANCE_DATABASE_PATH}",
+        "FINANCE_AUDIT_DIR": "${FINANCE_AUDIT_DIR}",
+        "FINANCE_API_BASE": "${FINANCE_API_BASE}"
       }
-    },
-    "google calendar": {
-      "type": "http",
-      "url": ""
-    },
-    "gmail": {
-      "type": "http",
-      "url": ""
     }
   }
 }

@@ -1,131 +1,48 @@
 ---
 name: journal-entry
-description: Prepare journal entries with proper debits, credits, and supporting detail. Use when booking month-end accruals (AP, payroll, prepaid), recording depreciation or amortization, posting revenue recognition or deferred revenue adjustments, or documenting an entry for audit review.
-argument-hint: "<entry type> [period]"
+description: 根据中国企业原始业务资料编制凭证草稿与计算支持，适用于采购销售、费用报销、资产、工资、计提与收入成本核对。
+argument-hint: "<业务类型> [期间]"
 ---
 
-# Journal Entry Preparation
+# 凭证编制
 
-> If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../../CONNECTORS.md).
+本文件由 Anthropic 官方同名 Skill 中国化改编，来源和修改说明见 [SOURCES.md](../../SOURCES.md)。连接类别见 [CONNECTORS.md](../shared/references/connectors.md)。
 
-**Important**: This command assists with journal entry workflows but does not provide financial advice. All entries should be reviewed by qualified financial professionals before posting.
+根据业务事实选择处理方法和直接工具；以下步骤是工作指导，可按资料情况调整。系统自动记录调用，不需要手工登记事实、版本摘要或任务图。
 
-Prepare journal entries with proper debits, credits, supporting detail, and review documentation.
+## 使用
 
-## Usage
+`/finance:journal-entry <业务类型> <期间>`。业务类型可为采购、销售退货、费用、资产、工资、计提或收入。币种默认仅在已核实为 CNY 时使用人民币元；期间、企业和账套均须明确。
 
-```
-/je <type> <period>
-```
+## 工作流程
 
-### Arguments
+### 1. 收集业务资料
 
-- `type` — The journal entry type. One of:
-  - `ap-accrual` — Accounts payable accruals for goods/services received but not yet invoiced
-  - `fixed-assets` — Depreciation and amortization entries for fixed assets and intangibles
-  - `prepaid` — Amortization of prepaid expenses (insurance, software, rent, etc.)
-  - `payroll` — Payroll accruals including salaries, benefits, taxes, and bonus accruals
-  - `revenue` — Revenue recognition entries including deferred revenue adjustments
-- `period` — The accounting period (e.g., `2024-12`, `2024-Q4`, `2024`)
+连接 `~~erp` 时取得真实账套、科目和相关明细；没有连接时读取本次获准的原件或请提供资料。由 Agent 整理，不要求客户填内部 JSON。
 
-## Workflow
+先明确适用会计准则、纳税身份、实际业务日期、履约与收付、发票和抵扣事实。仅加载该业务的 `finance_record_contract`，核对字段披露完整度；不认识的字段先查合同，不猜近似类型名。只有通用结构和规则引用时标注披露缺口，不据此断言算法未实现。缺件只影响依赖该资料的处理。
 
-### 1. Gather Source Data
+### 2. 核对并计算
 
-If ~~erp or ~~data warehouse is connected:
-- Pull the trial balance for the specified period
-- Pull subledger detail for the relevant accounts
-- Pull prior period entries of the same type for reference
-- Identify the current GL balances for affected accounts
+- 原始业务优先将 `target:{accountSetId,period}`、原件和记录交 `finance_workpaper`，后台绑定企业及数据库实例，生成会计和税费底稿；费用、采购、销售、退货、资产等采用实际记录合同。
+- 已有明确分录时用 `voucher_check` 检查金额、科目和借贷；账簿查询使用 `finance_query` 或 `ledger_query`。
+- 工具未覆盖的判断可单列模型推导及假设，不改写原件，不把推导称作原生工具结果。
+- 中国税费资格和金额调用 `finance_tax_calculate`；适用规则通过 `finance_rules` 读取，不在本 Skill 另维护税率表。
 
-If no data source is connected:
-> Connect ~~erp or ~~data warehouse to pull GL data automatically. You can also paste trial balance data or upload a spreadsheet.
+### 3. 生成凭证草稿
 
-Prompt the user to provide:
-- Trial balance or GL balances for affected accounts
-- Subledger detail or supporting schedules
-- Prior period entries for reference (optional)
+| 日期 | 摘要 | 科目编码及名称 | 借方（元） | 贷方（元） | 业务来源 | 状态 |
+|---|---|---|---:|---:|---|---|
+| 实际日期 | 实际业务 | 工具当前科目 | 工具结果 | 工具结果 | 原件定位 | 草稿/已入账 |
 
-### 2. Calculate the Entry
+支持明细列出计算过程、归类理由、前期比较和需调查事项。冲回依据实际业务和准则判断，不默认所有计提次月冲回。实际编制者和复核人分别记录，没有人审不代签。
 
-Based on the JE type:
+### 4. 复核
 
-**AP Accrual:**
-- Identify goods/services received but not invoiced by period end
-- Calculate accrual amounts from PO receipts, contracts, or estimates
-- Debit: Expense accounts (or asset accounts for capitalizable items)
-- Credit: Accrued liabilities
+检查科目与用途、金额精度、借贷、期间、收入和成本配比、价税关系、抵扣资格、退货原批次、收付核销及重复业务。借贷平衡不证明业务正确。草稿、已过账与待复核分别列示；需要正式入账时使用真实工具及现有授权和校验，不通过 SQL 或改日志制造成功。
 
-**Fixed Assets:**
-- Pull the fixed asset register or depreciation schedule
-- Calculate period depreciation by asset class and method (straight-line, declining balance, units of production)
-- Debit: Depreciation expense (by department/cost center)
-- Credit: Accumulated depreciation
+### 5. 输出
 
-**Prepaid:**
-- Pull the prepaid amortization schedule
-- Calculate the period amortization for each prepaid item
-- Debit: Expense accounts (by type — insurance, software, rent, etc.)
-- Credit: Prepaid expense accounts
+按 [报告顺序](../shared/references/reporting.md)提供：账本金额与差异；凭证和计算结果；适用规则与依据。工具调用及输入原件保存在深入排错索引。没有返回的金额写待核，不填零。
 
-**Payroll:**
-- Calculate accrued salaries for days worked but not yet paid
-- Calculate accrued benefits (health, retirement contributions, PTO)
-- Calculate employer payroll tax accruals
-- Calculate bonus accruals (if applicable, based on plan terms)
-- Debit: Salary expense, benefits expense, payroll tax expense
-- Credit: Accrued payroll, accrued benefits, accrued payroll taxes
-
-**Revenue:**
-- Review contracts and performance obligations
-- Calculate revenue to recognize based on delivery/performance
-- Adjust deferred revenue balances
-- Debit: Deferred revenue (or accounts receivable)
-- Credit: Revenue accounts (by stream/category)
-
-### 3. Generate the Journal Entry
-
-Present the entry in standard format:
-
-```
-Journal Entry: [Type] — [Period]
-Prepared by: [User]
-Date: [Period end date]
-
-| Line | Account Code | Account Name | Debit | Credit | Department | Memo |
-|------|-------------|--------------|-------|--------|------------|------|
-| 1    | XXXX        | [Name]       | X,XXX |        | [Dept]     | [Detail] |
-| 2    | XXXX        | [Name]       |       | X,XXX  | [Dept]     | [Detail] |
-|      |             | **Total**    | X,XXX | X,XXX  |            |      |
-
-Supporting Detail:
-- [Calculation basis and assumptions]
-- [Reference to supporting schedule or documentation]
-
-Reversal: [Yes/No — if yes, specify reversal date]
-```
-
-### 4. Review Checklist
-
-Before finalizing, verify:
-
-- [ ] Debits equal credits
-- [ ] Correct accounting period
-- [ ] Account codes are valid and map to the right GL accounts
-- [ ] Amounts are calculated correctly with supporting detail
-- [ ] Memo/description is clear and specific enough for audit
-- [ ] Department/cost center coding is correct
-- [ ] Entry is consistent with prior period treatment
-- [ ] Reversal flag is set appropriately (accruals should auto-reverse)
-- [ ] Supporting documentation is referenced or attached
-- [ ] Entry is within the user's approval authority
-- [ ] No unusual or out-of-pattern amounts that need investigation
-
-### 5. Output
-
-Provide:
-1. The formatted journal entry
-2. Supporting calculations
-3. Comparison to prior period entry of the same type (if available)
-4. Any items flagged for review or follow-up
-5. Instructions for posting (manual entry or upload format for the user's ERP)
+具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/journal-support.md)。
