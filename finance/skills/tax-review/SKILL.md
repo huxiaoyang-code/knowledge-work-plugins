@@ -31,6 +31,8 @@ argument-hint: "<税种或核对事项> <期间>"
 
 普通业务优先用`target:{accountSetId,period}`及原件/记录，后台据真实账库绑定企业实例，不要求客户提供内部ID或manifest。原始业务整体核对使用`finance_workpaper`，选定税费计算使用`finance_tax_calculate`，全年原件计算使用`finance_annual_workpaper`。工具按真实分支计算，不把一条公式运算等同全部资格已核。凭证交易税额、账面计提、本期法定应纳、实缴和差额分别读取，缺失项保留原生状态。
 
+只有带来源汇总而无完整账时，可自主选独立`finance_tax_summary_calculate`作条件试算，按需读`finance_record_contract(recordType=tax_summary)`的支持范围、字段和原件绑定示例。它不需要编造业务记录，不替代完整账核验；见[汇总条件试算](references/summary-calculation.md)。
+
 如工具不能表达某项业务，保留工具缺口并给有来源的模型推导，不编造认证日期、季度明细、优惠资格或银行核销记录来让工具通过。原生结果与独立核对不同则两者保留，明确调查对象。
 
 ### 4. 复核
