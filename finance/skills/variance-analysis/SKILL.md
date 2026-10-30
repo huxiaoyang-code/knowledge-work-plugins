@@ -1,266 +1,37 @@
 ---
 name: variance-analysis
-description: Decompose financial variances into drivers with narrative explanations and waterfall analysis. Use when analyzing budget vs. actual, period-over-period changes, revenue or expense variances, or preparing variance commentary for leadership.
-argument-hint: "<line item> <period> vs <comparison>"
+description: 分析中国企业账目、报表及税费底稿差异，拆分价格数量结构、跨期和一次性影响，形成有依据的解释。
+argument-hint: "<项目> <期间> vs <比较期或预算>"
 ---
 
-# Variance Analysis
+# 差异分析
 
-**Important**: This skill assists with variance analysis workflows but does not provide financial advice. All analyses should be reviewed by qualified financial professionals before use in reporting.
+由 Anthropic 官方同名 Skill 改编，见 [来源](../../SOURCES.md)。本技能解释已取得的数字，不能自行制造预算、业务原因或重要性阈值。
 
-Techniques for decomposing variances, materiality thresholds, narrative generation, waterfall chart methodology, and budget vs actual vs forecast comparisons.
+## 工作流程
 
-## Variance Decomposition Techniques
+### 1. 确定基线
 
-### Price / Volume Decomposition
+取得同企业、账套、币种、期间长度、含税口径和账面状态的实际数据。已有账簿通过 `finance_query` 或 `ledger_query` 查询；未入账底稿与正式报表分列。比较基线缺失时说明可分析范围。
 
-The most fundamental variance decomposition. Used for revenue, cost of goods, and any metric that can be expressed as Price x Volume.
+### 2. 拆分驱动
 
-**Formula:**
-```
-Total Variance = Actual - Budget (or Prior)
+根据真实明细选择价格/数量、费率/结构、人数/薪酬、业务类别、跨期或一次性事项。选用可用计算工具并保留算式；模型整理的分析标为模型推导，不能称为税费工具已确认。各驱动与剩余未解释部分须勾回总差额，不强行填平。
 
-Volume Effect  = (Actual Volume - Budget Volume) x Budget Price
-Price Effect   = (Actual Price - Budget Price) x Actual Volume
-Mix Effect     = Residual (interaction term), or allocated proportionally
+### 3. 调查原因
 
-Verification:  Volume Effect + Price Effect = Total Variance
-               (when mix is embedded in the price/volume terms)
-```
+先显示差额，再关联原业务和凭证。区分原件变化、模型提取、科目用途、规则适用、工具算法及比较口径。原因无法核实时列具体待查项和影响，不把“收入下降”重复当原因。工具报缺件或不支持的分支，不用自行计算值掩盖。
 
-**Three-way decomposition (separating mix):**
-```
-Volume Effect = (Actual Volume - Budget Volume) x Budget Price x Budget Mix
-Price Effect  = (Actual Price - Budget Price) x Budget Volume x Actual Mix
-Mix Effect    = Budget Price x Budget Volume x (Actual Mix - Budget Mix)
-```
+### 4. 展示桥接
 
-**Example — Revenue variance:**
-- Budget: 10,000 units at $50 = $500,000
-- Actual: 11,000 units at $48 = $528,000
-- Total variance: +$28,000 favorable
-  - Volume effect: +1,000 units x $50 = +$50,000 (favorable — sold more units)
-  - Price effect: -$2 x 11,000 units = -$22,000 (unfavorable — lower ASP)
-  - Net: +$28,000
+| 项目 | 起点（元） | 增减（元） | 终点（元） | 驱动与证据 |
+|---|---:|---:|---:|---|
+| 已核基线与实际 | 实际值 | 价格/数量/结构/跨期/未解释 | 实际值 | 原件/凭证/规则引用 |
 
-### Rate / Mix Decomposition
+图表与表格使用同一组已核数字，说明单位与正负方向。调查优先级按绝对影响、持续性、异常性质和业务风险判断；不硬编码上游默认比例。
 
-Used when analyzing blended rates across segments with different unit economics.
+### 5. 输出
 
-**Formula:**
-```
-Rate Effect = Sum of (Actual Volume_i x (Actual Rate_i - Budget Rate_i))
-Mix Effect  = Sum of (Budget Rate_i x (Actual Volume_i - Expected Volume_i at Budget Mix))
-```
+按 [报告顺序](../shared/references/reporting.md)先列账本金额和差异，再列凭证或计算，随后列依据。调用链和输入原件供深入排错，不替代业务解释。
 
-**Example — Gross margin variance:**
-- Product A: 60% margin, Product B: 40% margin
-- Budget mix: 50% A, 50% B → Blended margin 50%
-- Actual mix: 40% A, 60% B → Blended margin 48%
-- Mix effect explains 2pp of margin compression
-
-### Headcount / Compensation Decomposition
-
-Used for analyzing payroll and people-cost variances.
-
-```
-Total Comp Variance = Actual Compensation - Budget Compensation
-
-Decompose into:
-1. Headcount variance    = (Actual HC - Budget HC) x Budget Avg Comp
-2. Rate variance         = (Actual Avg Comp - Budget Avg Comp) x Budget HC
-3. Mix variance          = Difference due to level/department mix shift
-4. Timing variance       = Hiring earlier/later than planned (partial-period effect)
-5. Attrition impact      = Savings from unplanned departures (partially offset by backfill costs)
-```
-
-### Spend Category Decomposition
-
-Used for operating expense analysis when price/volume is not applicable.
-
-```
-Total OpEx Variance = Actual OpEx - Budget OpEx
-
-Decompose by:
-1. Headcount-driven costs    (salaries, benefits, payroll taxes, recruiting)
-2. Volume-driven costs       (hosting, transaction fees, commissions, shipping)
-3. Discretionary spend       (travel, events, professional services, marketing programs)
-4. Contractual/fixed costs   (rent, insurance, software licenses, subscriptions)
-5. One-time / non-recurring  (severance, legal settlements, write-offs, project costs)
-6. Timing / phasing          (spend shifted between periods vs plan)
-```
-
-## Materiality Thresholds and Investigation Triggers
-
-### Setting Thresholds
-
-Materiality thresholds determine which variances require investigation and narrative explanation. Set thresholds based on:
-
-1. **Financial statement materiality:** Typically 1-5% of a key benchmark (revenue, total assets, net income)
-2. **Line item size:** Larger line items warrant lower percentage thresholds
-3. **Volatility:** More volatile line items may need higher thresholds to avoid noise
-4. **Management attention:** What level of variance would change a decision?
-
-### Recommended Threshold Framework
-
-| Comparison Type | Dollar Threshold | Percentage Threshold | Trigger |
-|----------------|-----------------|---------------------|---------|
-| Actual vs Budget | Organization-specific | 10% | Either exceeded |
-| Actual vs Prior Period | Organization-specific | 15% | Either exceeded |
-| Actual vs Forecast | Organization-specific | 5% | Either exceeded |
-| Sequential (MoM) | Organization-specific | 20% | Either exceeded |
-
-*Set dollar thresholds based on your organization's size. Common practice: 0.5%-1% of revenue for income statement items.*
-
-### Investigation Priority
-
-When multiple variances exceed thresholds, prioritize investigation by:
-
-1. **Largest absolute dollar variance** — biggest P&L impact
-2. **Largest percentage variance** — may indicate process issue or error
-3. **Unexpected direction** — variance opposite to trend or expectation
-4. **New variance** — item that was on track and is now off
-5. **Cumulative/trending variance** — growing each period
-
-## Narrative Generation for Variance Explanations
-
-### Structure for Each Variance Narrative
-
-```
-[Line Item]: [Favorable/Unfavorable] variance of $[amount] ([percentage]%)
-vs [comparison basis] for [period]
-
-Driver: [Primary driver description]
-[2-3 sentences explaining the business reason for the variance, with specific
-quantification of contributing factors]
-
-Outlook: [One-time / Expected to continue / Improving / Deteriorating]
-Action: [None required / Monitor / Investigate further / Update forecast]
-```
-
-### Narrative Quality Checklist
-
-Good variance narratives should be:
-
-- [ ] **Specific:** Names the actual driver, not just "higher than expected"
-- [ ] **Quantified:** Includes dollar and percentage impact of each driver
-- [ ] **Causal:** Explains WHY it happened, not just WHAT happened
-- [ ] **Forward-looking:** States whether the variance is expected to continue
-- [ ] **Actionable:** Identifies any required follow-up or decision
-- [ ] **Concise:** 2-4 sentences, not a paragraph of filler
-
-### Common Narrative Anti-Patterns to Avoid
-
-- "Revenue was higher than budget due to higher revenue" (circular — no actual explanation)
-- "Expenses were elevated this period" (vague — which expenses? why?)
-- "Timing" without specifying what was early/late and when it will normalize
-- "One-time" without explaining what the item was
-- "Various small items" for a material variance (must decompose further)
-- Focusing only on the largest driver and ignoring offsetting items
-
-## Waterfall Chart Methodology
-
-### Concept
-
-A waterfall (or bridge) chart shows how you get from one value to another through a series of positive and negative contributors. Used to visualize variance decomposition.
-
-### Data Structure
-
-```
-Starting value:  [Base/Budget/Prior period amount]
-Drivers:         [List of contributing factors with signed amounts]
-Ending value:    [Actual/Current period amount]
-
-Verification:    Starting value + Sum of all drivers = Ending value
-```
-
-### Text-Based Waterfall Format
-
-When a charting tool is not available, present as a text waterfall:
-
-```
-WATERFALL: Revenue — Q4 Actual vs Q4 Budget
-
-Q4 Budget Revenue                                    $10,000K
-  |
-  |--[+] Volume growth (new customers)               +$800K
-  |--[+] Expansion revenue (existing customers)      +$400K
-  |--[-] Price reductions / discounting               -$200K
-  |--[-] Churn / contraction                          -$350K
-  |--[+] FX tailwind                                  +$50K
-  |--[-] Timing (deals slipped to Q1)                 -$150K
-  |
-Q4 Actual Revenue                                    $10,550K
-
-Net Variance: +$550K (+5.5% favorable)
-```
-
-### Bridge Reconciliation Table
-
-Complement the waterfall with a reconciliation table:
-
-| Driver | Amount | % of Variance | Cumulative |
-|--------|--------|---------------|------------|
-| Volume growth | +$800K | 145% | +$800K |
-| Expansion revenue | +$400K | 73% | +$1,200K |
-| Price reductions | -$200K | -36% | +$1,000K |
-| Churn / contraction | -$350K | -64% | +$650K |
-| FX tailwind | +$50K | 9% | +$700K |
-| Timing (deal slippage) | -$150K | -27% | +$550K |
-| **Total variance** | **+$550K** | **100%** | |
-
-*Note: Percentages can exceed 100% for individual drivers when there are offsetting items.*
-
-### Waterfall Best Practices
-
-1. Order drivers from largest positive to largest negative (or in logical business sequence)
-2. Keep to 5-8 drivers maximum — aggregate smaller items into "Other"
-3. Verify the waterfall reconciles (start + drivers = end)
-4. Color-code: green for favorable, red for unfavorable (in visual charts)
-5. Label each bar with both the amount and a brief description
-6. Include a "Total Variance" summary bar
-
-## Budget vs Actual vs Forecast Comparisons
-
-### Three-Way Comparison Framework
-
-| Metric | Budget | Forecast | Actual | Bud Var ($) | Bud Var (%) | Fcast Var ($) | Fcast Var (%) |
-|--------|--------|----------|--------|-------------|-------------|---------------|---------------|
-| Revenue | $X | $X | $X | $X | X% | $X | X% |
-| COGS | $X | $X | $X | $X | X% | $X | X% |
-| Gross Profit | $X | $X | $X | $X | X% | $X | X% |
-
-### When to Use Each Comparison
-
-- **Actual vs Budget:** Annual performance measurement, compensation decisions, board reporting. Budget is set at the beginning of the year and typically not changed.
-- **Actual vs Forecast:** Operational management, identifying emerging issues. Forecast is updated periodically (monthly or quarterly) to reflect current expectations.
-- **Forecast vs Budget:** Understanding how expectations have changed since planning. Useful for identifying planning accuracy issues.
-- **Actual vs Prior Period:** Trend analysis, sequential performance. Useful when budget is not meaningful (new business lines, post-acquisition).
-- **Actual vs Prior Year:** Year-over-year growth analysis, seasonality-adjusted comparison.
-
-### Forecast Accuracy Analysis
-
-Track how accurate forecasts are over time to improve planning:
-
-```
-Forecast Accuracy = 1 - |Actual - Forecast| / |Actual|
-
-MAPE (Mean Absolute Percentage Error) = Average of |Actual - Forecast| / |Actual| across periods
-```
-
-| Period | Forecast | Actual | Variance | Accuracy |
-|--------|----------|--------|----------|----------|
-| Jan    | $X       | $X     | $X (X%)  | XX%      |
-| Feb    | $X       | $X     | $X (X%)  | XX%      |
-| ...    | ...      | ...    | ...      | ...      |
-| **Avg**|          |        | **MAPE** | **XX%**  |
-
-### Variance Trending
-
-Track how variances evolve over the year to identify systematic bias:
-
-- **Consistently favorable:** Budget may be too conservative (sandbagging)
-- **Consistently unfavorable:** Budget may be too aggressive or execution issues
-- **Growing unfavorable:** Deteriorating performance or unrealistic targets
-- **Shrinking variance:** Forecast accuracy improving through the year (normal pattern)
-- **Volatile:** Unpredictable business or poor forecasting methodology
+具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/variance-methods.md)。

@@ -1,5 +1,7 @@
 # Knowledge Work Plugins
 
+本仓库是 Anthropic knowledge-work-plugins 的中国化 fork。首批改造 [finance 中国财税插件](finance/README.md)，连接本机中国财税工具，使用 `knowledge-work-plugins-cn` marketplace；其他插件保留上游内容。来源与修改见 [finance/SOURCES.md](finance/SOURCES.md)。
+
 Plugins that turn Claude into a specialist for your role, team, and company. Built for [Claude Cowork](https://claude.com/product/cowork), also compatible with [Claude Code](https://claude.com/product/claude-code).
 
 ## Why Plugins
