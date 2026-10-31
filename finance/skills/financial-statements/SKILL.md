@@ -37,3 +37,5 @@ argument-hint: "<monthly|quarterly|annual|ytd> <期间>"
 依次提供账本及报表金额、相关凭证/计算、准则和规则依据。默认日常报告不展开调用日志和原件全文；深入排错索引始终保留，见 [报告顺序](../shared/references/reporting.md)。
 
 具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/financial-controls.md)。
+
+完整季度委托另见[完整账期与中文复核交付](../shared/references/quarter-review.md)：使用`finance_quarter_review`生成真实账库的完整科目余额表、利润表、资产负债表、现金流量表及来源核对。工作簿呈现本次原生bundle，不能用单个税额试算代替完整账表，也不能把凭证草稿称为已过账账簿。

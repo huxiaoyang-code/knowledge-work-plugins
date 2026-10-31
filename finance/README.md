@@ -30,6 +30,8 @@ claude plugin install finance@knowledge-work-plugins-cn
 
 交付默认依次展示账本金额、凭证/计算结果、规则依据。调用链及输入原件始终自动保存，在深入排错时展开，见 [报告顺序](skills/shared/references/reporting.md)。本版本提供本机账税核对和申报依据；不进行税局登录、正式申报、缴款或开票。
 
+完整季度业务见[完整账期与中文复核交付](skills/shared/references/quarter-review.md)。客户提供中文原始业务资料，读取时留原表结构、调用时留参数与规则映射；实际账库生成完整科目余额表、利润表、资产负债表、现金流量表及HTML/XLSX。工具未完成、未核或未分类的事项保留实际状态，不能把金额试算或模型计算升级为完整账务验收。
+
 税率和公式统一由后端规则与计算工具维护。福建漳州是当前业务起点，具体地点、税务资格和地区参数须来自实际证据；地名不能替代市区分类或优惠资格。后端义务目录及限制见 [税费范围](skills/tax-review/references/supported-obligations.md)。
 
 ## 无模型验证

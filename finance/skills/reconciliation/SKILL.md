@@ -38,3 +38,5 @@ argument-hint: "<账户或业务对象> [期间]"
 先给余额和差额，再给核销/调整凭证及计算，随后是规则与业务依据。完整调用和原始输入仅在深入排错时展开；保留所有自动记录，见 [报告顺序](../shared/references/reporting.md)。
 
 具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/reconciliation-methods.md)。
+
+季度完整账目同时核对[完整账期与中文复核交付](../shared/references/quarter-review.md)。原件初读留原结构，业务调用再留中文参数映射与规则选择；两种记录都由实际读取/执行自动产生，不事后手工登记成已核过程。

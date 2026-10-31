@@ -7,6 +7,7 @@
 | ERP/中国财税 | `~~erp` | 本机 taxes-agent 的 finance MCP，profile为`direct`；账套、凭证、查询、报表和已支持税费 |
 | 规则与税费 | `~~tax tools` | 同一finance MCP的`finance_rules`、`finance_tax_calculate`、`finance_tax_summary_calculate`、`finance_record_contract` |
 | 业务底稿 | `~~workpapers` | 同一finance MCP的`finance_workpaper`、`finance_annual_workpaper` |
+| 完整季度账目 | `~~erp` / `~~workpapers` | `finance_quarter_review`读取真实账库生成中文完整账表；草稿/FIFO按实际`finance_workpaper_details`合同分页查询 |
 | 文档/表格 | `~~documents` / `~~spreadsheets` | 本版本不预装解析或电子表格服务；按宿主实际工具及本次授权使用 |
 | 数据仓库/沟通 | `~~data warehouse` / `~~chat` / `~~email` | 本版本不预配；确有需要时由操作者另接，不以官方示例地址表示已经连接 |
 
