@@ -34,8 +34,8 @@ argument-hint: "<monthly|quarterly|annual|ytd> <期间>"
 
 ### 5. 输出
 
-依次提供账本及报表金额、相关凭证/计算、准则和规则依据。默认日常报告不展开调用日志和原件全文；深入排错索引始终保留，见 [报告顺序](../shared/references/reporting.md)。
+完整账期以系统按固定 Spec 取数生成的中文账务复核卡片作为一个交付入口，默认展示科目余额、银行与现金、税费和三张报表；模型不另写最终 HTML。凭证、采用规则与参数、工具调用及原件按需逐层查看，记录缺口如实保留，见 [报告顺序](../shared/references/reporting.md)。
 
 具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/financial-controls.md)。
 
-完整季度委托另见[完整账期与中文复核交付](../shared/references/quarter-review.md)：交付科目余额表、利润表、资产负债表、现金流量表及中文复核；模型可直接计算并生成含公式或配套脚本的HTML/XLSX。`finance_quarter_review`是已有真实账库时的可选导出入口，原生bundle不是交付前置条件。单个税额试算不能代替完整账表，凭证草稿不能称为已过账账簿。
+完整季度委托另见[完整账期与中文复核交付](../shared/references/quarter-review.md)：模型可自主计算并输出结构化账务数据和含公式或配套脚本的工作簿，由系统生成固定复核卡片。`finance_quarter_review`是已有真实账库时的可选导出入口，原生bundle不是交付前置条件。固定卡片仅支持明确的数据合同，不能假定任意文件都能自动适配；单个税额试算不能代替完整账表，凭证草稿不能称为已过账账簿。

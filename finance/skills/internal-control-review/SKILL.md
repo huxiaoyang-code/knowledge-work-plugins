@@ -32,6 +32,6 @@ argument-hint: "<控制领域> [期间]"
 
 ### 5. 输出
 
-先列异常涉及的账本金额，再给凭证或计算和规则依据；工具调用、输入和原件通过深入排错索引查看。完整原始记录始终保存，见 [报告顺序](../shared/references/reporting.md)。
+先列异常涉及的账本金额，凭证或计算和规则依据按需查看；完整账期使用系统固定卡片。工具调用、输入和原件通过后台记录查看，完整原始记录始终保存，见 [报告顺序](../shared/references/reporting.md)。
 
 具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/control-testing-methods.md)。

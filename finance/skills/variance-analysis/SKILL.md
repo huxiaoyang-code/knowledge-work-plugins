@@ -32,6 +32,6 @@ argument-hint: "<项目> <期间> vs <比较期或预算>"
 
 ### 5. 输出
 
-按 [报告顺序](../shared/references/reporting.md)先列账本金额和差异，再列凭证或计算，随后列依据。调用链和输入原件供深入排错，不替代业务解释。
+按 [报告顺序](../shared/references/reporting.md)先列账本金额和差异，凭证或计算及依据按需查看；完整账期使用系统固定卡片。调用链和输入原件供深入排错，差异解释保留来源，不另写重复索引。
 
 具体方法和支持模板仅在需要时读取：[按需参考](../shared/references/variance-methods.md)。
