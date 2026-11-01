@@ -69,6 +69,18 @@ test('Chinese obligation guide matches all current native tax tools and limits',
  for(const p of markdown)for(const m of read(p).matchAll(/`(finance_[a-z_]+|account_context|ledger_query|voucher_check|voucher_create|asset_create|depreciation_run|book_import_incremental|book_import_batch)`/g))assert.ok(known.has(m[1]),`${p} references unknown tool ${m[1]}`);
 });
 
+test('documented fixed-card example is accepted by the discoverable optional MCP contract', {skip:!backend&&'TAXES_AGENT_ROOT not supplied; fixed-card contract not checked'},async()=>{
+ const {DIRECT_TOOLS}=await import(pathToFileURL(join(backend,'05-reconstruction/codex/mcp/finance-mcp/direct-tools.mjs')));
+ const {validateSchemaValue}=await import(pathToFileURL(join(backend,'06-workbench/server/harness-schema-validation.mjs')));
+ const schema=DIRECT_TOOLS.find(t=>t.name==='finance_calculation_run').inputSchema;
+ const reference=read(join(skills,'shared','references','connectors.md'));
+ const example=JSON.parse(reference.match(/```json\s*([\s\S]*?)```/)[1]);
+ assert.ok(schema.properties.reviewCard,'the optional output contract must be discoverable through direct MCP');
+ assert.ok(!schema.required.includes('reviewCard'),'fixed presentation must not become a prerequisite for calculation');
+ assert.deepEqual(validateSchemaValue(schema.properties.reviewCard,example.reviewCard),[],'the exact documented example must match the backend');
+ for(const field of ['bankSourceIndex','findingsSourceIndex','cashSourceIndex'])assert.deepEqual(validateSchemaValue(schema.properties.reviewCard,{...example.reviewCard,[field]:2}),[],field);
+});
+
 test('every business document is actually readable through restricted MCP skills_read', {skip:!backend&&'TAXES_AGENT_ROOT not supplied; MCP reading not run',timeout:30000},async()=>{
  const {McpStdioClient}=await import(pathToFileURL(join(backend,'05-reconstruction/codex/mcp/finance-mcp/mcp-stdio-client.mjs')));
  const scratch=mkdtempSync(join(tmpdir(),'finance-cn-skills-'));
