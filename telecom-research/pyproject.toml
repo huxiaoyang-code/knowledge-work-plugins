@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telecom-research-control"
+version = "0.1.0"
+description = "Stage-gated control plane for independent existing research harnesses"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = []
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.20,<2"]
+
+[project.scripts]
+telecom-research = "telecom_research.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
