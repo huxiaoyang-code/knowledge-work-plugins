@@ -4,6 +4,8 @@
 
 本目录是从原 `bio-research` 方法与插件组织改编的独立增量，原目录和仓库现有插件不变。许可与来源见 [LICENSE](LICENSE) 和 [NOTICE](NOTICE)。
 
+同事接手与继续开发请先读 [AGENTS.md](AGENTS.md) 和 [Codex 交接指南](docs/CODEX_HANDOFF.md)。指南包括源码包核验、环境安装、模型与连接器配置、完整手动阶段流程、返修及扩展位置。
+
 ## 阶段与隔离
 
 ```text
@@ -58,7 +60,7 @@ python -m telecom_research --state D:\telecom-work\state materialize --runtime $
 
 `--harness codex` 物化相应宿主布局。`--profiles-root` 指向当前源码副本中的 `profiles`；安装的后端包不隐式包含全部阶段 Skills。目标目录需为新目录，避免混入旧会话能力。按生成的启动说明及计划运行宿主，检查实际工具清单；物化配置不等于已经启动或验证该 harness。
 
-管理器提供前台 JSONL 进程监督接口。显式 `start` 才会按该运行时的 `launch-plan.json` 启动真实宿主；这一步可能调用已配置模型并产生费用。保持监督进程运行，以管理多个独立子进程和各自日志：
+管理器提供前台 JSONL 进程监督接口。显式 `start` 才会按状态库中保存的启动计划运行真实宿主；`launch-plan.json` 是可读副本，直接编辑它不会改变监督器命令。这一步可能调用已配置模型并产生费用。保持监督进程运行，以管理多个独立子进程和各自日志：
 
 ```powershell
 python -m telecom_research --state D:\telecom-work\state supervise
@@ -107,3 +109,7 @@ python -m unittest discover -s tests -v
 ```
 
 Skills 的结构检查可用 Codex `skill-creator` 的 `quick_validate.py`；Windows 上用 `python -X utf8` 读取中文文件。结构通过不能证明科学判断正确。选题评审和完整论文评审仍需用已知案例、人工意见及实际研究逐步校准。
+
+## 源码交付
+
+本仓库的 [打包 Skill](.agents/skills/package-telecom-research/SKILL.md) 处理“打包/发给同事/交付源码”。默认用 `scripts/package_source.py --repo <仓库> --output-dir <仓库外目录> --scope repository` 从干净 Git 快照生成包含全部原插件的完整源码 ZIP；通信改造保留在 `telecom-research/`。用户明确只要通信项目时才用 `--scope telecom`。包附同事 Codex 入口、元数据、逐文件清单与 SHA256 校验文件；完整步骤和校验边界见 [交接指南](docs/CODEX_HANDOFF.md)。
