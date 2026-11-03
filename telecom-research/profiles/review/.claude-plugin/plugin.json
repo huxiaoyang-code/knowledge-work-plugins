@@ -1,0 +1,5 @@
+{
+  "name": "telecom-review",
+  "version": "0.1.0",
+  "description": "在独立 harness 会话中审查通信研究初稿和完整论文，输出有证据的评审决定。"
+}

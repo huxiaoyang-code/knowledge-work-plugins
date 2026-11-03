@@ -1,0 +1,20 @@
+Telecom Research
+
+This directory adapts the plugin organization and scientific problem selection
+workflow from Anthropic's bio-research plugin, as distributed in:
+https://github.com/huxiaoyang-code/knowledge-work-plugins/tree/de879f81f2963547b5d92fc6d4d9db1b4487ea08/bio-research
+
+The original plugin is attributed to Anthropic and is distributed under the
+Apache License, Version 2.0. A copy of that license is included in LICENSE.
+
+The adapted workflow draws on the original plugin's cited methodological source:
+Fischbach, M. A., and Walsh, C. T. (2024), "Problem choice and decision trees in
+science and engineering", Cell 187, 1828-1833. This notice does not imply that the
+authors endorse this adaptation.
+
+Modifications in this directory add communication engineering methods, separate
+research/review/execution capability profiles, and local staged runtime controls.
+The original bio-research directory is retained unchanged.
+
+Third-party MCP services, simulation libraries, device drivers, publication
+templates and datasets retain their own licenses and access conditions.
